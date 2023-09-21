@@ -17,13 +17,14 @@ public class Employee {
 
     @ManyToOne
     @JoinColumn(name = "company_id")
+    @JsonIgnore
     private Company company;
 
+//    ***
 //    @Transient // Add this annotation to indicate it's not a persistent field
 //    private Long companyId; // Transient field to hold company_id
 //
 //    public void setCompanyId(Long companyId) {
-//        System.out.println("Haa bhai me to chal raha.. Ye Dekhh.." + companyId);
 //
 //        this.companyId = companyId;
 //    }
