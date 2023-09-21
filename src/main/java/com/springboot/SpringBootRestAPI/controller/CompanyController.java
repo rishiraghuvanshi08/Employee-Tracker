@@ -53,4 +53,17 @@ public class CompanyController {
         }
     }
 
+    @DeleteMapping("/deleteComp/{id}")
+    public String deleteCompanyById(@PathVariable long id){
+        Optional<Company> optionalCompany = companyRepository.findById(id);
+
+        if(optionalCompany.isPresent()) {
+            companyRepository.deleteById(id);
+            return "Deleted..";
+        }
+        else{
+            return "Employee Not Found";
+        }
+    }
+
 }

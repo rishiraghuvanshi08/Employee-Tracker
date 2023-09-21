@@ -15,7 +15,7 @@ public class Company {
 
     private String name;
 
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 //    @JsonManagedReference       // Comment This
     @JsonIgnore
     private List<Employee> employeeList;
