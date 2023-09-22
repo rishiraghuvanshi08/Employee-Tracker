@@ -8,7 +8,6 @@ import com.springboot.SpringBootRestAPI.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,19 +20,19 @@ public class CompanyController {
     @Autowired
     EmployeeRepository employeeRepository;
 
-//    To Get Employee
+//   1. To Get Employee
     @GetMapping("/getEmp")
     public List<Employee> getEmployee(){
         return employeeRepository.findAll();
     }
 
-//    To Get Company
+//   2. To Get Company
     @GetMapping("/getComp")
     public List<Company> getCompany(){
         return companyRepository.findAll();
     }
 
-//    Adding a new Company
+//   3. Adding a new Company
     @PostMapping("/addCompany")
     public Company createCompany(@RequestBody Company company){
         if(company.getEmployeeList().isEmpty()){
@@ -48,7 +47,7 @@ public class CompanyController {
         }
     }
 
-//    Adding Employee by Company ID
+//   4. Adding Employee by Company ID
     @PostMapping("/addEmployee/{id}")
     public Employee createEmployee(@PathVariable long id, @RequestBody Employee employee){
         Optional<Company> company = companyRepository.findById(id);
@@ -63,7 +62,7 @@ public class CompanyController {
         }
     }
 
-//    Delete Employee by Employee ID
+//   5. Delete Employee by Employee ID
     @DeleteMapping("/deleteEmp/{id}")
     public String deleteEmployeeById(@PathVariable long id){
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
@@ -77,7 +76,7 @@ public class CompanyController {
         }
     }
 
-//    Deleting Company by ID - CASCADE
+//   6. Deleting Company by ID - CASCADE
     @DeleteMapping("/deleteComp/{id}")
     public String deleteCompanyById(@PathVariable long id){
         Optional<Company> optionalCompany = companyRepository.findById(id);
@@ -87,17 +86,17 @@ public class CompanyController {
             return "Deleted..";
         }
         else{
-            return "Employee Not Found";
+            return "Company Not Found";
         }
     }
 
-//    Getting Employee by CompanyID - Specific method
+//   7. Getting Employee by CompanyID - Specific method
     @GetMapping("/{id}/getEmployee")
     public List<Employee> getAllEmployees(@PathVariable long id){
         return employeeRepository.findByCompanyId(id);
     }
 
-//    Update Company By ID
+//   8. Update Company By ID
     @PutMapping("/updateCompany/{id}")
     public Company updateCompany(@PathVariable long id, @RequestBody Company updatedCompany){
         Optional<Company> optionalCompany = companyRepository.findById(id);
@@ -117,7 +116,7 @@ public class CompanyController {
         }
     }
 
-    // Getting specific employee of specific company
+//   9. Getting specific employee of specific company
     @GetMapping("/{cid}/getEmployee/{eid}")
     public Employee getEmployee(@PathVariable("cid") long cid, @PathVariable("eid") long eid){
         List<Employee> employeeList = employeeRepository.findByCompanyId(cid);
@@ -132,7 +131,7 @@ public class CompanyController {
         }
     }
 
-//    Delete Employee
+//   10. Delete Employee
     @DeleteMapping("/{cid}/deleteEmployee/{eid}")
     public String deleteEmployee(@PathVariable("cid") long cid, @PathVariable("eid") long eid){
         List<Employee> employeeList = employeeRepository.findByCompanyId(cid);

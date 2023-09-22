@@ -20,24 +20,6 @@ public class Employee {
     @JsonIgnore
     private Company company;
 
-//    ***
-//    @Transient // Add this annotation to indicate it's not a persistent field
-//    private Long companyId; // Transient field to hold company_id
-//
-//    public void setCompanyId(Long companyId) {
-//
-//        this.companyId = companyId;
-//    }
-// Getter and Setter for companyId
-
-//    public Long getCompanyId() {
-//        if (company != null) {
-//            return company.getId();
-//        }
-//
-//        return null; // Handle the case when company is null
-//    }
-
     public long getId() {
         return id;
     }
