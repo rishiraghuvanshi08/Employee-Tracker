@@ -21,16 +21,19 @@ public class CompanyController {
     @Autowired
     EmployeeRepository employeeRepository;
 
+//    To Get Employee
     @GetMapping("/getEmp")
     public List<Employee> getEmployee(){
         return employeeRepository.findAll();
     }
 
+//    To Get Company
     @GetMapping("/getComp")
     public List<Company> getCompany(){
         return companyRepository.findAll();
     }
 
+//    Adding a new Company
     @PostMapping("/addCompany")
     public Company createCompany(@RequestBody Company company){
         if(company.getEmployeeList().isEmpty()){
@@ -45,6 +48,7 @@ public class CompanyController {
         }
     }
 
+//    Adding Employee by Company ID
     @PostMapping("/addEmployee/{id}")
     public Employee createEmployee(@PathVariable long id, @RequestBody Employee employee){
         Optional<Company> company = companyRepository.findById(id);
@@ -59,6 +63,7 @@ public class CompanyController {
         }
     }
 
+//    Delete Employee by Employee ID
     @DeleteMapping("/deleteEmp/{id}")
     public String deleteEmployeeById(@PathVariable long id){
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
@@ -72,6 +77,7 @@ public class CompanyController {
         }
     }
 
+//    Deleting Company by ID - CASCADE
     @DeleteMapping("/deleteComp/{id}")
     public String deleteCompanyById(@PathVariable long id){
         Optional<Company> optionalCompany = companyRepository.findById(id);
@@ -85,12 +91,13 @@ public class CompanyController {
         }
     }
 
+//    Getting Employee by CompanyID - Specific method
     @GetMapping("/{id}/getEmployee")
     public List<Employee> getAllEmployees(@PathVariable long id){
         return employeeRepository.findByCompanyId(id);
     }
 
-//  --------------------------------------------------------------------------------------------------------------------
+//    Update Company By ID
     @PutMapping("/updateCompany/{id}")
     public Company updateCompany(@PathVariable long id, @RequestBody Company updatedCompany){
         Optional<Company> optionalCompany = companyRepository.findById(id);
@@ -101,7 +108,7 @@ public class CompanyController {
             updatedCompany.getEmployeeList().forEach(e -> e.setCompany(existingCompany));
 
             existingCompany.setName(updatedCompany.getName());
-            existingCompany.setEmployeeList(updatedCompany.getEmployeeList());
+            existingCompany.setEmployeeList(updatedCompany.getEmployeeList());      // *****
 
             return companyRepository.save(existingCompany);
         }
@@ -110,5 +117,42 @@ public class CompanyController {
         }
     }
 
+    // Getting specific employee of specific company
+    @GetMapping("/{cid}/getEmployee/{eid}")
+    public Employee getEmployee(@PathVariable("cid") long cid, @PathVariable("eid") long eid){
+        List<Employee> employeeList = employeeRepository.findByCompanyId(cid);
+
+        Optional<Employee> optionalEmployee = employeeList.stream().filter(e -> e.getId() == eid).findFirst();
+
+        if(optionalEmployee.isPresent()){
+            return optionalEmployee.get();
+        }
+        else{
+            return null;
+        }
+    }
+
+//    Delete Employee
+    @DeleteMapping("/{cid}/deleteEmployee/{eid}")
+    public String deleteEmployee(@PathVariable("cid") long cid, @PathVariable("eid") long eid){
+        List<Employee> employeeList = employeeRepository.findByCompanyId(cid);
+
+        Optional<Employee> empToDelete = employeeList.stream().filter(e -> e.getId() == eid).findFirst();
+
+        if(empToDelete.isPresent()){
+            Optional<Company> company = companyRepository.findById(cid);
+
+            if (company.isPresent()){
+                company.get().getEmployeeList().remove(empToDelete.get());      // *****
+
+                employeeRepository.deleteById(eid);
+                return "Deleted Successfully";
+            }
+            return "failed";
+        }
+        else{
+            return "Employee Not Found";
+        }
+    }
 
 }
