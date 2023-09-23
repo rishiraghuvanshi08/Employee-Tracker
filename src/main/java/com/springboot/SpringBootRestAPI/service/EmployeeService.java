@@ -25,9 +25,10 @@ public class EmployeeService {
         if(employee != null && optionalCompany.isPresent()) {
             Company company = optionalCompany.get();
 
-            company.getEmployeeList().remove(employee);
+
 
             employeeRepository.deleteByIdAndCompanyId(eid, cid);
+            company.getEmployeeList().remove(employee);
             return "Deleted..";
         }
         return "Not found";
