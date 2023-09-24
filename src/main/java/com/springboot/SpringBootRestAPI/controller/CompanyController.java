@@ -6,7 +6,7 @@ import com.springboot.SpringBootRestAPI.repository.CompanyRepository;
 import com.springboot.SpringBootRestAPI.repository.EmployeeRepository;
 import com.springboot.SpringBootRestAPI.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class CompanyController {
 
     /**
      * For Getting List of Company
-     *
+     * 
      * @return List<Company>
      */
     @GetMapping("/getComp")
@@ -46,7 +46,7 @@ public class CompanyController {
 
     /**
      * For Adding a new Company
-     *
+     * 
      * @return Company
      */
     @PostMapping("/addCompany")
@@ -65,7 +65,7 @@ public class CompanyController {
 
     /**
      * For Adding Employee by Company ID
-     *
+     * 
      * @return Employee
      */
     @PostMapping("/addEmployee/{id}")
@@ -84,7 +84,7 @@ public class CompanyController {
 
     /**
      * For Deleting Employee by Employee ID
-     *
+     * 
      * @return String
      */
     @DeleteMapping("/deleteEmp/{id}")
@@ -102,7 +102,7 @@ public class CompanyController {
 
     /**
      * For Deleting Company by ID (Cascade.ALL)
-     *
+     * 
      * @return String
      */
     @DeleteMapping("/deleteComp/{id}")
@@ -130,7 +130,7 @@ public class CompanyController {
 
     /**
      * For Updating Company By ID
-     *
+     * 
      * @return Company
      */
     @PutMapping("/updateCompany/{id}")
@@ -154,7 +154,7 @@ public class CompanyController {
 
     /**
      * For Getting Employee of a Company
-     *
+     * 
      * @return Employee
      */
     @GetMapping("/{cid}/getEmployee/{eid}")
@@ -173,7 +173,7 @@ public class CompanyController {
 
     /**
      * For Deleting Employee
-     *
+     * 
      * @return String
      */
     @DeleteMapping("/{cid}/deleteEmployee/{eid}")
@@ -199,10 +199,10 @@ public class CompanyController {
     }
 
     /**
-     * Getting Employee List By Name
-     *
-     * @return List<Employee>
-     * */
+    * Getting Employee List By Name
+    *
+    * @return List<Employee>
+    * */
     @GetMapping("/getByName/{name}")
     public List<Employee> getEmployeeByName(@PathVariable String name){
         return employeeRepository.findByName(name);
@@ -210,21 +210,36 @@ public class CompanyController {
 
     /**
      * For Getting Employee By Id and Company Id
-     *
+     * 
      * @return Employee
      */
     @GetMapping("{cid}/getByIdAndCompanyId/{eid}")
-    public Employee getByIdAndCompanyId(@PathVariable("cid") long cid, @PathVariable("eid") long eid){
-        return employeeRepository.findByIdAndCompanyId(eid, cid);
+    public ResponseEntity<Employee> getByIdAndCompanyId(@PathVariable("cid") long cid, @PathVariable("eid") long eid){
+        Optional<Employee> optionalEmployee = employeeRepository.findByIdAndCompanyId(eid, cid);
+
+        if(optionalEmployee.isPresent()){
+            return ResponseEntity.ok(optionalEmployee.get());
+        }
+        return ResponseEntity.notFound().build();
     }
 
     /**
      * For Deleting Employee by Id And Company Id
-     *
+     * 
      * @return String
      */
     @DeleteMapping("{cid}/deleteById/{eid}")
     public String deleteByIdAndCompanyId(@PathVariable("cid") long cid, @PathVariable("eid") long eid){
         return employeeService.deleteByIdAndCompany_Id(cid, eid);
+    }
+
+    /**
+     * For Getting Employee by Id
+     *
+     * @return ResponseEntity<Employee>
+     */
+    @GetMapping("/getEmployeeById/{eid}")
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable("eid") Long eid){
+        return employeeService.getEmployeeById(eid);
     }
 }

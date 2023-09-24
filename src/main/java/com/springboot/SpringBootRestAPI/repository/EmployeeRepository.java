@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
@@ -12,8 +13,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     List<Employee> findByName(String name);
 
-    Employee findByIdAndCompanyId(long eid, long cid);
-
+    Optional<Employee> findByIdAndCompanyId(long eid, long cid);
 
     void deleteByIdAndCompanyId(long eid, long cid);
 }
