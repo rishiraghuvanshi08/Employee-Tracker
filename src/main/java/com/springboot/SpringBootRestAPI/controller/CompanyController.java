@@ -7,6 +7,7 @@ import com.springboot.SpringBootRestAPI.repository.CompanyRepository;
 import com.springboot.SpringBootRestAPI.repository.EmployeeRepository;
 import com.springboot.SpringBootRestAPI.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -121,7 +122,7 @@ public class CompanyController {
     }
 
     /**
-     * For Getting Employee by CompanyID
+     * For Getting Employees by CompanyID
      * 
      * @return List<Employee>
      */
@@ -216,8 +217,13 @@ public class CompanyController {
      * @return Employee
      */
     @GetMapping("{cid}/getByIdAndCompanyId/{eid}")
-    public Employee getByIdAndCompanyId(@PathVariable("cid") long cid, @PathVariable("eid") long eid){
-        return employeeRepository.findByIdAndCompanyId(eid, cid);
+    public ResponseEntity<Employee> getByIdAndCompanyId(@PathVariable("cid") long cid, @PathVariable("eid") long eid){
+        Optional<Employee> optionalEmployee = employeeRepository.findByIdAndCompanyId(eid, cid);
+
+        if(optionalEmployee.isPresent()){
+            return ResponseEntity.ok(optionalEmployee.get());
+        }
+        return ResponseEntity.notFound().build();
     }
 
     /**
@@ -228,5 +234,15 @@ public class CompanyController {
     @DeleteMapping("{cid}/deleteById/{eid}")
     public String deleteByIdAndCompanyId(@PathVariable("cid") long cid, @PathVariable("eid") long eid){
         return employeeService.deleteByIdAndCompany_Id(cid, eid);
+    }
+
+    /**
+     * For Getting Employee by Id
+     *
+     * @return ResponseEntity<Employee>
+     */
+    @GetMapping("/getEmployeeById/{eid}")
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable("eid") Long eid){
+        return employeeService.getEmployeeById(eid);
     }
 }
