@@ -8,7 +8,6 @@ import com.springboot.SpringBootRestAPI.repository.EmployeeRepository;
 import com.springboot.SpringBootRestAPI.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -27,11 +26,6 @@ public class CompanyController {
     @Autowired
     EmployeeService employeeService;
 
-    /**
-     * For Getting List of Employees
-     * 
-     * @return List<Employee>
-     */
     @GetMapping("/getEmp")
     public List<Employee> getEmployee(){
         return employeeRepository.findAll();
