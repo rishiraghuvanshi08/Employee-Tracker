@@ -19,6 +19,14 @@ public class EmployeeService {
     @Autowired
     EmployeeRepository employeeRepository;
 
+//    public ResponseEntity<Employee> getEmployees(){
+//        List<Employee> employeeList = employeeRepository.findAll();
+//
+//        if(employeeList.isEmpty()){
+//            return ResponseEntity.ok()
+//        }
+//    }
+
     @Transactional
     public String deleteByIdAndCompany_Id(long cid, long eid){
         Optional<Employee> optionalEmployee = employeeRepository.findByIdAndCompanyId(eid, cid);

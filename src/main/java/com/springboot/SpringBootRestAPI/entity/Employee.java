@@ -2,17 +2,21 @@ package com.springboot.SpringBootRestAPI.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 
 @Entity
 public class Employee {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)@Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)@Column(nullable = false)
     private long id;
 
+    @NotNull(message = "Please enter proper employee name")
     private String name;
 
+//    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Date should be in yyyy-MM-dd format")
     private LocalDate dateOfJoining;
 
     @ManyToOne

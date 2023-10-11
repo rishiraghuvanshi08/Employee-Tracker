@@ -2,11 +2,17 @@ package com.springboot.SpringBootRestAPI.controller;
 
 import com.springboot.SpringBootRestAPI.entity.Company;
 import com.springboot.SpringBootRestAPI.entity.Employee;
+import com.springboot.SpringBootRestAPI.entity.User;
 import com.springboot.SpringBootRestAPI.repository.CompanyRepository;
 import com.springboot.SpringBootRestAPI.repository.EmployeeRepository;
+import com.springboot.SpringBootRestAPI.repository.UserRepository;
 import com.springboot.SpringBootRestAPI.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +28,18 @@ public class CompanyController {
     EmployeeRepository employeeRepository;
 
     @Autowired
+    UserRepository userRepository;
+
+    @Autowired
     EmployeeService employeeService;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @GetMapping("/public")
+    public String getPublic(){
+        return "This is Public URL.";
+    }
 
     /**
      * For Getting List of Employees
@@ -30,6 +47,7 @@ public class CompanyController {
      * @return List<Employee>
      */
     @GetMapping("/getEmp")
+    @PreAuthorize("hasRole('USER')")
     public List<Employee> getEmployee(){
         return employeeRepository.findAll();
     }
@@ -39,8 +57,10 @@ public class CompanyController {
      * 
      * @return List<Company>
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getComp")
     public List<Company> getCompany(){
+        // System.out.println("Hey I'm Here.."+ 23/0);
         return companyRepository.findAll();
     }
 
@@ -51,7 +71,7 @@ public class CompanyController {
      */
     @PostMapping("/addCompany")
     public Company createCompany(@RequestBody Company company){
-        if(company.getEmployeeList().isEmpty()){
+        if(company.getEmployeeList() == null || company.getEmployeeList().isEmpty()){
             return companyRepository.save(company);
         }
         else{
@@ -68,17 +88,23 @@ public class CompanyController {
      * 
      * @return Employee
      */
-    @PostMapping("/addEmployee/{id}")
-    public Employee createEmployee(@PathVariable long id, @RequestBody Employee employee){
-        Optional<Company> company = companyRepository.findById(id);
-
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping("/addEmployee/{cid}")
+    public ResponseEntity<Employee> createEmployee(@PathVariable long cid, @Valid @RequestBody Employee employee){
+        Optional<Company> company = companyRepository.findById(cid);
+        System.out.println(employee);
         if(company.isPresent()){
             employee.setCompany(company.get());
-
-            return employeeRepository.save(employee);
+            try {
+                employeeRepository.save(employee);
+                return new ResponseEntity<Employee>(employee, HttpStatus.CREATED);
+            }
+            catch (Exception e){
+                return new ResponseEntity<Employee>(employee, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
         else{
-            return null;
+            return new ResponseEntity<Employee>(employee, HttpStatus.CREATED);
         }
     }
 
@@ -93,6 +119,7 @@ public class CompanyController {
 
         if(optionalEmployee.isPresent()) {
             employeeRepository.deleteById(id);
+            System.out.println("Nipta Diya..");
             return "Deleted..";
         }
         else{
@@ -106,15 +133,15 @@ public class CompanyController {
      * @return String
      */
     @DeleteMapping("/deleteComp/{id}")
-    public String deleteCompanyById(@PathVariable long id){
+    public Company deleteCompanyById(@PathVariable long id){
         Optional<Company> optionalCompany = companyRepository.findById(id);
 
         if(optionalCompany.isPresent()) {
             companyRepository.deleteById(id);
-            return "Deleted..";
+            return optionalCompany.get();
         }
         else{
-            return "Employee Not Found";
+            return null;
         }
     }
 
@@ -241,5 +268,27 @@ public class CompanyController {
     @GetMapping("/getEmployeeById/{eid}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable("eid") Long eid){
         return employeeService.getEmployeeById(eid);
+    }
+
+    @PutMapping("/updateEmployee")
+    public Employee updateEmployee(@RequestBody Employee updatedEmployee){
+        Optional<Employee> existingEmployee = employeeRepository.findById(updatedEmployee.getId());
+
+        if(existingEmployee.isPresent()){
+            Company company = existingEmployee.get().getCompany();
+            updatedEmployee.setCompany(company);
+            employeeRepository.save(updatedEmployee);
+            return updatedEmployee;
+        }
+        return null;
+    }
+
+    @PostMapping("/addUser")
+    public User addUser(@RequestBody User user) {
+
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
+        return userRepository.save(user);
     }
 }
