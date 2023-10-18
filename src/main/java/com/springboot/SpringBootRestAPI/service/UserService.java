@@ -4,6 +4,7 @@ import com.springboot.SpringBootRestAPI.config.MyUserDetails;
 import com.springboot.SpringBootRestAPI.entity.User;
 import com.springboot.SpringBootRestAPI.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@Primary
 public class UserService implements UserDetailsService {
 
     @Autowired
@@ -20,9 +22,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println(username+ "ihsir");
         Optional<User> optionalUser = userRepository.findByUsername(username);
-        System.out.println("rishii");
         if(optionalUser.isPresent()){
             MyUserDetails myUserDetails = new MyUserDetails(optionalUser.get());
             return myUserDetails;
