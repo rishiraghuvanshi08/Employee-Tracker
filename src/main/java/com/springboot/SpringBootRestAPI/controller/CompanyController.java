@@ -47,7 +47,7 @@ public class CompanyController {
      * @return List<Employee>
      */
     @GetMapping("/getEmp")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<Employee> getEmployee(){
         return employeeRepository.findAll();
     }
